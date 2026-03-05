@@ -1,0 +1,79 @@
+generator client { provider = "prisma-client-js" }
+
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+
+enum VehicleStatus { AVAILABLE SOLD PENDING }
+enum ApplicationStatus { NEW IN_REVIEW CONTACTED APPROVED DECLINED CLOSED }
+enum HousingStatus { RENT OWN OTHER }
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+}
+
+model Vehicle {
+  id String @id @default(uuid())
+  stockNumber String @unique
+  vin String?
+  year Int
+  make String
+  model String
+  trim String?
+  mileage Int?
+  price Int?
+  exteriorColor String?
+  interiorColor String?
+  transmission String?
+  drivetrain String?
+  fuelType String?
+  bodyStyle String?
+  description String?
+  status VehicleStatus @default(AVAILABLE)
+  featured Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  photos VehiclePhoto[]
+}
+
+model VehiclePhoto {
+  id String @id @default(uuid())
+  vehicleId String
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  url String
+  alt String?
+  sortOrder Int
+  createdAt DateTime @default(now())
+}
+
+model Application {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status ApplicationStatus @default(NEW)
+  firstName String
+  lastName String
+  phone String
+  email String
+  addressStreet String
+  addressCity String
+  addressState String
+  addressZip String
+  timeAtAddressMonths Int
+  housingStatus HousingStatus
+  monthlyIncomeCents Int
+  monthlyHousingPaymentCents Int?
+  otherIncomeCents Int?
+  employerName String?
+  jobTitle String?
+  timeAtJobMonths Int?
+  dobMonth Int?
+  dobYear Int?
+  preferredContactMethod String?
+  downPaymentRange String?
+  tradeIn Boolean @default(false)
+  vehicleStockInterested String?
+  consentGiven Boolean
+  internalNotes String?
+}
